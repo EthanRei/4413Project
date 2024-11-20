@@ -5,9 +5,106 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background-color: #B19BD9;
 }
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
+}
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  background-color: #A232A6;
+  padding: 1rem;
+  color: rgb(255, 255, 255);
+}
+
+.navbar ul {
+  list-style: none;
+  display: flex;
+  gap: 1rem;
+}
+
+.navbar a {
+  color: white;
+  text-decoration: none;
+}
+
+.navbar a:hover {
+  text-decoration: underline;
+}
+.catalog-view {
+  padding: 2rem;
+  color: #ffffff;
+}
+
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+
+.catalog-item {
+  border: 1px solid #ccc;
+  padding: 1rem;
+  background-color: #fff;
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  transition: transform 0.2s ease-in-out;
+  color: black;
+}
+.catalog-item .image-container {
+  width: 100%;
+  height: 200px;  /* Set a fixed height */
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center; /* Vertically and horizontally centers the image */
+  margin-bottom: 1rem;
+}
+.catalog-item img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain; /* Ensures the whole image fits within the container */
+  border-radius: 8px;
+}
+
+.cart-view {
+  padding: 1rem;
+  color: #ffffff;
+}
+
+.cart-item {
+  border: 1px solid #ffffff;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border-radius: 5px;
+  color: #000;
+  display: flex; /* Flexbox layout */
+  background-color: #ffffff;
+  gap: 2px; /* Adds 2px gap between .cont and .cont2 */
+}
+
+.cart-item .cont {
+  width: 10%;  /* Adjust width of cont (take up 60% of space) */
+  height: 200px;  
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+
+.cart-item img{
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain; /* Ensures the whole image fits within the container */
+  border-radius: 8px;
+}
+
+.cart-item input {
+  width: 50px;
+  margin-left: 5px;
 }
