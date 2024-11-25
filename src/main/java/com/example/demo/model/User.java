@@ -1,4 +1,4 @@
-package model; // Adjust this package to match your project's structure
+package com.example.demo.model; // Adjust this package to match your project's structure
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
