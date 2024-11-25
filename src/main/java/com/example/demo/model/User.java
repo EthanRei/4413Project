@@ -1,42 +1,30 @@
 package com.example.demo.model; // Adjust this package to match your project's structure
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.annotation.Id;
 
-
-@Entity
-@Table(name = "users")
+@Document
 public class User {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @Column(nullable = false, unique = true)
+    private String userId;
     private String username;
-
-    @Column(nullable = false)
     private String password;
 
-    // Default constructor
-    public User() {}
-
-    // Parameterized constructor
-    public User(String username, String password) {
+    public User(String userId, String username, String password) {
+        super();
+        this.userId = userId;
         this.username = username;
         this.password = password;
     }
 
     // Getters and Setters
-    public Long getId() {
-        return id;
+
+    public String getUserId() {
+        return userId;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
     public String getUsername() {
