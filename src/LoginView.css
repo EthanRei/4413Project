@@ -1,0 +1,75 @@
+/* Center the form container */
+  
+
+
+ 
+  form {
+    align-items: center;
+    justify-content: center;
+    max-width: 400px;
+    background-color: rgb(176, 25, 163);
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+    margin-left: 34.5%;
+  }
+  
+  /* Form heading */
+  h1 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #333;
+  }
+  
+  /* Form labels */
+  label {
+    font-weight: bold;
+    display: block;
+    margin-bottom: 8px;
+    color: #ffffff;
+  }
+  
+  /* Input fields */
+  input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+    box-sizing: border-box;
+  }
+  
+  /* Input focus effect */
+  input:focus {
+    border-color: #6200ea;
+    outline: none;
+    box-shadow: 0 0 3px rgba(98, 0, 234, 0.5);
+  }
+  
+  /* Submit button */
+  button {
+    width: 100%;
+    padding: 10px;
+    background-color: #6200ea;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  /* Button hover effect */
+  button:hover {
+    background-color: #4500b5;
+  }
+  
+  /* Add some spacing to div elements inside the form */
+  form div {
+    margin-bottom: 15px;
+  }
+  
