@@ -1,0 +1,55 @@
+AdminUser
+--------------
+AdminId
+Username
+Password
+Email
+
+CustomerUser
+--------------
+CustomerId
+First Name
+Last Name
+Address
+CreditCardId
+E-mail
+Username
+Password
+
+CustomerCartEntry
+--------------
+CustomerId
+ItemId
+QuantityInCart
+
+OrderDetails
+--------------
+OrderId
+CustomerId
+TotalAmount
+Date
+
+OrderEntry
+--------------
+OrderId
+ItemId
+Quantity
+
+
+CreditCard
+--------------
+CreditCardId
+Number
+Expiry
+CVV
+
+Item
+--------------
+ItemId
+Image/Url???
+Category*
+Brand*
+Model*
+Qty Remaining
+
+Not sure what the three * could necessarily be but it depends on what kind of shop we have (ex/ videogames, computers, cars, etc...)
