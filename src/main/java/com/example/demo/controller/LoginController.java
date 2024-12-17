@@ -18,7 +18,7 @@ import com.example.demo.service.AdminService;
 import com.example.demo.service.UserService;
 
 @RestController
-@RequestMapping("/api/login")
+@RequestMapping("/api")
 public class LoginController {
 	
 	
@@ -28,9 +28,13 @@ public class LoginController {
 	private AdminService adminservice;
 	
 	
-    @PostMapping("/check")
+    @PostMapping("/im/signin")
     public ResponseEntity<?> checkUser(@RequestBody LoginRequest loginRequest) {
     	
+    	
+    	System.out.println("Received Username " + loginRequest.getUsername());
+    	System.out.println("Received Password " + loginRequest.getPassword());
+
     	boolean user_exists = userservice.checkUserExists(loginRequest.getUsername(), loginRequest.getPassword());
     	
     			
@@ -63,7 +67,7 @@ public class LoginController {
     	
     }
     
-    @PostMapping("/register")
+    @PostMapping("/im/register")
     public ResponseEntity<?> registerUser(@RequestBody User user) {
         // Check if the user already exists
     	
@@ -77,9 +81,11 @@ public class LoginController {
         }
 
         // Save the user to the database
-        userservice.addUser(user);
+        User user1 = userservice.addUser(user);
 
         return ResponseEntity.ok("{\"message\": \"User registered successfully\"}");
+        //return ResponseEntity.ok(user1); - this is for testing the endpoints that need the ID
+
     }
 
 }

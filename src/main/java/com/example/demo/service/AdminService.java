@@ -7,9 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import com.example.demo.model.Admin;
-import com.example.demo.model.User;
 import com.example.demo.repository.AdminRepository;
-import com.example.demo.repository.UserRepository;
 
 
 

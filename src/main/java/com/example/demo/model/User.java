@@ -15,7 +15,11 @@ import org.springframework.data.annotation.Id;
     private String creditCardId;
     private String address;
     private String email;
-
+    
+    
+    public User() {
+        // Default constructor
+    }
     
     public User(String userId, String username, String password, String firstName, String lastName, String creditCardId, String email, String address) {
         super();

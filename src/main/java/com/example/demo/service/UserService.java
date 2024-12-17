@@ -28,5 +28,12 @@ public class UserService {
         return userCheck.filter(user -> user.getPassword().equals(password)).isPresent();
 
 	}
+
+    public User getCustomerById(String customerID) {
+    	
+        // Fetch the customer from the database by ID
+    	
+        return userRepository.findById(customerID).orElse(null);
+    }
 	
 }
