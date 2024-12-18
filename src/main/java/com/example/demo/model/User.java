@@ -1,10 +1,11 @@
+
 package com.example.demo.model;
 
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.annotation.Id;
 
-@Document
-public class User {
+	@Document
+	public class User {
     @Id
     private String userId;
     private String username;
@@ -14,7 +15,11 @@ public class User {
     private String creditCardId;
     private String address;
     private String email;
-
+    
+    
+    public User() {
+        // Default constructor
+    }
     
     public User(String userId, String username, String password, String firstName, String lastName, String creditCardId, String email, String address) {
         super();

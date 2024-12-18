@@ -9,7 +9,7 @@ public class CustomerCartEntry {
     private int qty;
 
     public CustomerCartEntry(String customerId, String itemId, int qty) {
-        super()
+        super();
         this.customerId = customerId;
         this.itemId = itemId;
         this.qty = qty;
