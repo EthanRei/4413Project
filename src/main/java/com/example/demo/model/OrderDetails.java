@@ -17,7 +17,6 @@ public class OrderDetails {
     private String customerId;
     @Field("total") 
     private double total;
-    @CreatedDate
     @Field("date")
     private Date date;
     @Field("billInfo")

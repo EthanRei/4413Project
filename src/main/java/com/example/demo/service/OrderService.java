@@ -3,6 +3,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Map;
 import java.util.List;
 
@@ -83,7 +84,7 @@ public class OrderService {
                 if (itemStock.getItemId().equals(cartEntry.getItemId())) {
                     total += cartEntry.getQty() * itemStock.getPrice();
                     int newStockQty = itemStock.getQuantity() - cartEntry.getQty();
-                    catalogService.updateItemQuantity(customerId, newStockQty);
+                    catalogService.updateItemQuantity(itemStock.getItemId(), newStockQty);
                     break;
                 }
             }
@@ -96,6 +97,8 @@ public class OrderService {
         orderDetails.setCustomerId(customerId);
         orderDetails.setItems(orderEntries);
         orderDetails.setTotal(total);
+        orderDetails.setBillInfo(billInfo);
+        orderDetails.setDate(new Date());
 
         return ordersRepository.save(orderDetails);
     }

@@ -51,7 +51,7 @@ public class OrderController {
 		Map<String, Object> responseBody = new HashMap<>();
         if (order != null) {
 			responseBody.put("message", "success");
-			responseBody.put("newOrder", orderService.createOrderForCustomer(customerId, billInfo));
+			responseBody.put("newOrder", order);
 			return ResponseEntity.ok(responseBody);	      
         }
 		responseBody.put("message", "there was an error in customer order");
