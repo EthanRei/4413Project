@@ -2,36 +2,29 @@
 package com.example.demo.model;
 
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 import org.springframework.data.annotation.Id;
 
 	@Document
 	public class User {
     @Id
     private String userId;
+    @Field("username")
     private String username;
+    @Field("password")
     private String password;
+    @Field("firstName")
     private String firstName;
+    @Field("lastName")
     private String lastName;
-    private String creditCardId;
+    @Field("creditCardNumber")
+    private String creditCardNumber;
+    @Field("creditCardCVV")
+    private String creditCardCVV;
+    @Field("address")
     private String address;
+    @Field("email")
     private String email;
-    
-    
-    public User() {
-        // Default constructor
-    }
-    
-    public User(String userId, String username, String password, String firstName, String lastName, String creditCardId, String email, String address) {
-        super();
-        this.userId = userId;
-        this.username = username;
-        this.password = password;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.creditCardId = creditCardId;
-        this.email = email;
-        this.address = address;
-    }
 
     // Getters and Setters
 
@@ -59,14 +52,21 @@ import org.springframework.data.annotation.Id;
         this.lastName = lastName;
     }
 
-    public String getCreditCardId() {
-        return creditCardId;
+    public String getCreditCardNumber() {
+        return creditCardNumber;
     }
 
-    public void setCreditCardId(String creditCardId) {
-        this.creditCardId = creditCardId;
+    public void setCreditCardNumber(String creditCardNumber) {
+        this.creditCardNumber = creditCardNumber;
     }
 
+    public String getCreditCardCVV() {
+        return creditCardCVV;
+    }
+
+    public void setCreditCardCVV(String creditCardCVV) {
+        this.creditCardCVV = creditCardCVV;
+    }
     public String getEmail() {
         return email;
     }

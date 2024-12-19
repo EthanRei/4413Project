@@ -4,7 +4,6 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import com.example.demo.model.User;
 import com.example.demo.repository.UserRepository;
@@ -13,9 +12,14 @@ import com.example.demo.repository.UserRepository;
 public class UserService {
      @Autowired
      private UserRepository userRepository;
+     @Autowired
+     private CartService cartService;
 
-     public User addUser(@RequestBody User user) {
-        return userRepository.save(user);
+     public User addUser(User user) {
+        User savedUser = userRepository.save(user);
+        savedUser.getUserId();
+        cartService.createCartForCustomer(savedUser.getUserId());
+        return savedUser;
      }
 
 	public boolean checkUserExists(String username, String password) {		
