@@ -1,5 +1,10 @@
 package com.example.demo.controller;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
@@ -15,6 +20,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 
 @RestController
@@ -90,6 +96,23 @@ public class UserController {
         User savedUser = userService.registerNewUser(existingUser);
 
         return ResponseEntity.ok(savedUser);
+    }
+    
+    
+    @GetMapping("/users")
+    public ResponseEntity<?> getAllUsers() {
+    	
+        List<User> users = userService.getUsers();
+
+        if (users.isEmpty()) {
+            return ResponseEntity.status(404).body("{\"message\": \"No users found\"}");
+        }
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("message", "Users retrieved successfully");
+        response.put("users", users);
+
+        return ResponseEntity.ok(response);
     }
     
     

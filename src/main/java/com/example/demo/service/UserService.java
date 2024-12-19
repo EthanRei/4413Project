@@ -1,10 +1,17 @@
 package com.example.demo.service;
 
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
+import com.example.demo.model.Item;
 import com.example.demo.model.User;
 import com.example.demo.repository.UserRepository;
 
@@ -14,6 +21,9 @@ public class UserService {
      private UserRepository userRepository;
      @Autowired
      private CartService cartService;
+     
+     @Autowired
+     private MongoTemplate mongoTemplate; 
 
      public User registerNewUser(User user) {
         User savedUser = userRepository.save(user);
@@ -35,5 +45,10 @@ public class UserService {
         // Fetch the customer from the database by ID
         return userRepository.findById(customerID).orElse(null);
     }
+
+	public List<User> getUsers() {
+	    return userRepository.findAll();
+
+	}
 	
 }
