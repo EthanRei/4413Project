@@ -1,6 +1,5 @@
 package com.example.demo.controller;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,7 +19,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 
 
 @RestController
@@ -85,10 +83,7 @@ public class UserController {
         }
         if (updatedUser.getEmail() != null) {
         	existingUser.setEmail(updatedUser.getEmail());
-        }
-        if (updatedUser.getCreditCardCVV() != null) {
-        	existingUser.setCreditCardCVV(updatedUser.getCreditCardCVV());
-        }
+        }  
         if (updatedUser.getCreditCardNumber() != null) {
         	existingUser.setCreditCardNumber(updatedUser.getCreditCardNumber());
         }

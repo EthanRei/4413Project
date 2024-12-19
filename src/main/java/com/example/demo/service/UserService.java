@@ -1,31 +1,22 @@
 package com.example.demo.service;
 
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
-import com.example.demo.model.Item;
 import com.example.demo.model.User;
 import com.example.demo.repository.UserRepository;
 
 @Service
 public class UserService {
-     @Autowired
-     private UserRepository userRepository;
-     @Autowired
-     private CartService cartService;
-     
-     @Autowired
-     private MongoTemplate mongoTemplate; 
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private CartService cartService;
 
-     public User registerNewUser(User user) {
+    public User registerNewUser(User user) {
         User savedUser = userRepository.save(user);
         savedUser.getUserId();
         cartService.createCartForCustomer(savedUser.getUserId());
