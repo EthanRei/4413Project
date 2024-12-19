@@ -24,7 +24,6 @@ public class AdminService {
     
     
 	public boolean validateAdmin(String adminUsername, String adminPassword) {
-		// TODO Auto-generated method stub
 		
 		Optional<Admin> admincheck = adminRepository.findByUsername(adminUsername);
 		

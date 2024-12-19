@@ -15,6 +15,7 @@ import java.util.List;
 
 import com.example.demo.model.CustomerCart;
 import com.example.demo.model.CustomerCartEntry;
+import com.example.demo.model.Item;
 import com.example.demo.repository.CartRepository;
 
 @Service
@@ -22,6 +23,8 @@ public class CartService {
 
     @Autowired
     private CartRepository cartRepository;
+    @Autowired
+    private CatalogService catalogService;
 
     @Autowired
     private MongoTemplate mongoTemplate;
@@ -57,12 +60,14 @@ public class CartService {
 
         for (CustomerCartEntry updateEntry: newValues) {
             String itemId = updateEntry.getItemId();
+            Item catalogItem = catalogService.getItemById(itemId);
+            if (catalogItem == null) {
+                continue;
+            }
             int newQty = updateEntry.getQty();
-
+            int inStockQty = catalogItem.getQuantity();
             // Check if newQty is valid
-            if (newQty < 0 || newQty > 10000) {
-                // 10000 is temporary
-                //TODO Check if qty is over current stock when catalog is implemented
+            if (newQty < 0 || newQty > inStockQty) {                
                 failedItems.add(cartItemToJsonMapping(updateEntry));
                 continue;
             }
