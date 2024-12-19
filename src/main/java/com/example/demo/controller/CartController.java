@@ -29,9 +29,6 @@ public class CartController {
 
     @GetMapping("/{customerId}")
     public ResponseEntity<?> getCustomerCart(@PathVariable("customerId") String customerId) {
-        // TODO Line below not supposed to be here, we will create customer carts during registration
-        cartService.createCartForCustomer(customerId);
-
         CustomerCart cart = cartService.getCustomerCart(customerId);
         Map<String, Object> responseBody = new HashMap<>();
         responseBody.put("message", "success");
