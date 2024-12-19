@@ -20,19 +20,19 @@ public class UserService {
         savedUser.getUserId();
         cartService.createCartForCustomer(savedUser.getUserId());
         return savedUser;
-     }
+    }
 
-	public boolean checkUserExists(String username, String password) {		
-		
-		Optional<User> userCheck = userRepository.findByUsername(username);
-      return userCheck.filter(user -> user.getPassword().equals(password)).isPresent();
-
+	public boolean checkValidUser(String username, String password) {		
+	    Optional<User> userCheck = userRepository.findByUsername(username);
+        return userCheck.filter(user -> user.getPassword().equals(password)).isPresent();
 	}
 
+    public User getCustomerByUsername(String username) {
+        return userRepository.findByUsername(username).orElse(null);
+    }
+
     public User getCustomerById(String customerID) {
-    	
         // Fetch the customer from the database by ID
-    	
         return userRepository.findById(customerID).orElse(null);
     }
 	
