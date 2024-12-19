@@ -1,28 +1,14 @@
 package com.example.demo.model;
 
-import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
-@Document
 public class CustomerCartEntry {
-    private String customerId;
+    @Field("itemId")
     private String itemId;
+    @Field("qty")
     private int qty;
 
-    public CustomerCartEntry(String customerId, String itemId, int qty) {
-        super();
-        this.customerId = customerId;
-        this.itemId = itemId;
-        this.qty = qty;
-    }
-
     // Getters and Setters
-
-    public String getCustomerId() {
-        return customerId;
-    }
-    public void setCustomerId(String customerId) {
-        this.customerId = customerId;
-    }
     public String getItemId() {
         return itemId;
     }
@@ -36,5 +22,4 @@ public class CustomerCartEntry {
         this.qty = qty;
     }
     
-
 }
