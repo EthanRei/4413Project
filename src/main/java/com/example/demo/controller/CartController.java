@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.demo.exception.CustomerCartNotFoundException;
 import com.example.demo.model.CustomerCart;
 import com.example.demo.service.CartService;
 
@@ -29,11 +30,17 @@ public class CartController {
 
     @GetMapping("/{customerId}")
     public ResponseEntity<?> getCustomerCart(@PathVariable("customerId") String customerId) {
-        CustomerCart cart = cartService.getCustomerCart(customerId);
         Map<String, Object> responseBody = new HashMap<>();
-        responseBody.put("message", "success");
-        responseBody.put("cart", cartService.cartToJsonMapping(cart));
-        return ResponseEntity.ok().body(responseBody);    		
+        try {
+            CustomerCart cart = cartService.getCustomerCart(customerId);
+            responseBody.put("message", "success");
+            responseBody.put("cart", cartService.cartToJsonMapping(cart));
+            return ResponseEntity.ok().body(responseBody);   
+        } catch (CustomerCartNotFoundException e) {
+            responseBody.put("message", "unable to find cart for customer with id - "+customerId);
+            return ResponseEntity.status(404).body(responseBody);   
+        }
+ 		
     }
 
     @PutMapping("/{customerId}/items")

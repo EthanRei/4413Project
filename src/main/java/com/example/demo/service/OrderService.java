@@ -4,9 +4,13 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Map;
 import java.util.List;
 
+import com.example.demo.exception.BadRequestException;
+import com.example.demo.exception.CustomerCartNotFoundException;
+import com.example.demo.exception.OrderNotFoundException;
+import com.example.demo.exception.PaymentProcessException;
+import com.example.demo.exception.ProductNotFoundException;
 import com.example.demo.model.BillInfo;
 import com.example.demo.model.CustomerCart;
 import com.example.demo.model.ItemEntry;
@@ -24,12 +28,13 @@ public class OrderService {
     @Autowired
     CatalogService catalogService;
 
-    public OrderDetails createOrderForCustomer(String customerId, BillInfo billInfo) {
+    public OrderDetails createOrderForCustomer(String customerId, BillInfo billInfo) 
+    throws CustomerCartNotFoundException, BadRequestException, PaymentProcessException, ProductNotFoundException{
         CustomerCart cart = cartService.getCustomerCart(customerId);
 
         if (cart.getItems().isEmpty()) {
             System.out.println("Attempted to checkout an empty cart");
-            return null; 
+            throw new BadRequestException("attempted to checkout an empty cart");
         }
 
         List<String> itemIds = new ArrayList<>();
@@ -39,8 +44,8 @@ public class OrderService {
         List<Item> currentStock = catalogService.getItemsByIds(itemIds);
 
         if (currentStock.isEmpty()) { 
-            System.out.println("Item in cart doesn't exist in item list");
-            return null; 
+            System.out.println("item(s) in internal cart doesn't exist in catalog of items");
+            throw new ProductNotFoundException(); 
         }
         
         List<ItemEntry> orderEntries = new ArrayList<>();
@@ -66,12 +71,13 @@ public class OrderService {
         if (invalidCart) {
             System.out.println("Customer cart was invalid");
             cartService.updateCustomerCart(customerId, cart.getItems());
-            return null;
+            throw new BadRequestException("customer cart had more items than what was in stock, cart quantities have been changed internally");
         }
 
         // Pseudo payment processor
         if (billInfo.getCreditCardCVV().contains("2")) {
-            return null;
+            System.out.println("payment has failed");
+            throw new PaymentProcessException();
         }        
         
         System.out.println("Valid cart and payment process complete");
@@ -84,7 +90,11 @@ public class OrderService {
                 if (itemStock.getItemId().equals(cartEntry.getItemId())) {
                     total += cartEntry.getQty() * itemStock.getPrice();
                     int newStockQty = itemStock.getQuantity() - cartEntry.getQty();
-                    catalogService.updateItemQuantity(itemStock.getItemId(), newStockQty);
+                    try {
+                        catalogService.updateItemQuantity(itemStock.getItemId(), newStockQty);
+                    } catch (ProductNotFoundException e) {
+                        System.out.println("Bug: Product could not be found after loading from catalog");
+                    }
                     break;
                 }
             }
@@ -103,12 +113,16 @@ public class OrderService {
         return ordersRepository.save(orderDetails);
     }
 
-	public List<OrderDetails> getOrders(Map<String, String> filters) {
+	public List<OrderDetails> getOrders() {
 		return ordersRepository.findAll(); 
 	}
 
-    public OrderDetails getOrder(String orderId) {
-        return ordersRepository.findById(orderId).orElse(null);
+    public OrderDetails getOrder(String orderId) throws OrderNotFoundException{
+        OrderDetails order = ordersRepository.findById(orderId).get();
+        if (order != null) { return order; }
+
+        // No order found
+        throw new OrderNotFoundException();
     }
 
 }

@@ -7,12 +7,13 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
 
+import com.example.demo.exception.CustomerCartNotFoundException;
+import com.example.demo.exception.ProductNotFoundException;
 import com.example.demo.model.CustomerCart;
 import com.example.demo.model.ItemEntry;
 import com.example.demo.model.Item;
@@ -33,7 +34,7 @@ public class CartService {
      * If the customer already has associated cart, a cart is not created
      */
     public void createCartForCustomer(String customerId) {
-        if (customerHasCart(customerId)) {return ;}
+        if (cartRepository.findByCustomerId(customerId).isPresent()) {return ;}
 
         CustomerCart cart = new CustomerCart();
         cart.setItems(new ArrayList<ItemEntry>());
@@ -41,8 +42,12 @@ public class CartService {
         cartRepository.save(cart);
     }
 
-    public CustomerCart getCustomerCart(String customerId) {
-        return cartRepository.findByCustomerId(customerId).get();
+    public CustomerCart getCustomerCart(String customerId) throws CustomerCartNotFoundException{
+        CustomerCart cart = cartRepository.findByCustomerId(customerId).get();
+        if (cart != null) { return cart; }
+
+        // No cart found
+        throw new CustomerCartNotFoundException();
     }
 
     /**
@@ -56,44 +61,44 @@ public class CartService {
         CustomerCart cart = cartRepository.findByCustomerId(customerId).get();
         List<ItemEntry> items = cart.getItems();
         List<Map<String, Object>> failedItems = new ArrayList<Map<String, Object>>();
-
+        
         for (ItemEntry updateEntry: newValues) {
-            String itemId = updateEntry.getItemId();
-            Item catalogItem = catalogService.getItemById(itemId);
-            if (catalogItem == null) {
-                continue;
-            }
-            int newQty = updateEntry.getQty();
-            int inStockQty = catalogItem.getQuantity();
-            // Check if newQty is valid
-            if (newQty < 0 || newQty > inStockQty) {                
-                failedItems.add(cartItemToJsonMapping(updateEntry));
-                continue;
-            }
-
-            // Update qty in items
-            boolean found = false;
-            for (int i = 0; i < items.size(); i++) {
-                if (items.get(i).getItemId().equals(itemId)) {
-                    found = true;
-                    if (newQty == 0) {
-                        items.remove(i);
-                    }
-                    else {
-                        items.get(i).setQty(newQty);
-                    }
-                    break;
+            try {
+                String itemId = updateEntry.getItemId();
+                Item catalogItem = catalogService.getItemById(itemId);
+                int newQty = updateEntry.getQty();
+                int inStockQty = catalogItem.getQuantity();
+                // Check if newQty is valid
+                if (newQty < 0 || newQty > inStockQty) {                
+                    failedItems.add(cartItemToJsonMapping(updateEntry));
+                    continue;
                 }
-            }
 
-            System.out.println(found);
-            // If not in items, add to items
-            if (!found && newQty > 0) {
-                ItemEntry newEntry = new ItemEntry();
-                newEntry.setItemId(itemId);
-                newEntry.setQty(newQty);
-                items.add(newEntry);
-            }
+                // Update qty in items
+                boolean found = false;
+                for (int i = 0; i < items.size(); i++) {
+                    if (items.get(i).getItemId().equals(itemId)) {
+                        found = true;
+                        if (newQty == 0) {
+                            items.remove(i);
+                        }
+                        else {
+                            items.get(i).setQty(newQty);
+                        }
+                        break;
+                    }
+                }
+
+                // If not in items, add to items
+                if (!found && newQty > 0) {
+                    ItemEntry newEntry = new ItemEntry();
+                    newEntry.setItemId(itemId);
+                    newEntry.setQty(newQty);
+                    items.add(newEntry);
+                }
+            } catch(ProductNotFoundException e) {
+                System.out.println("Bug: Encountered a product in customer cart with no matching id in catalog");
+            }            
         }
 
         // TODO Move this code to a DAO
@@ -112,15 +117,6 @@ public class CartService {
     }
     
     // Utility Methods
-
-    /**
-     * Returns true if given customer has a cart, else false.
-     */
-    private boolean customerHasCart(String customerId) {
-        Optional<CustomerCart> findCart = cartRepository.findByCustomerId(customerId);
-        return findCart.isPresent();
-
-    }
     
     public Map<String, Object> cartToJsonMapping(CustomerCart cart) {
         Map<String, Object> cartMap = new HashMap<>();
