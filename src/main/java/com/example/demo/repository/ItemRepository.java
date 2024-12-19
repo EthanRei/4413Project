@@ -6,8 +6,6 @@ import org.springframework.stereotype.Repository;
 import com.example.demo.model.Item;
 
 @Repository
-public interface CatalogRepository extends MongoRepository<Item, String> {
-	
-	
+public interface ItemRepository extends MongoRepository<Item, String> {
 
 }
