@@ -4,22 +4,14 @@ package com.example.demo.controller;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.demo.model.AdminRequest;
 import com.example.demo.model.CustomerCart;
-import com.example.demo.model.LoginRequest;
-import com.example.demo.model.User;
-import com.example.demo.repository.UserRepository;
-import com.example.demo.service.AdminService;
-import com.example.demo.service.UserService;
 import com.example.demo.service.CartService;
 
 
@@ -32,36 +24,31 @@ import org.springframework.web.bind.annotation.PathVariable;
 @RestController
 @RequestMapping("/api/cart")
 public class CartController {
-    
-    @Autowired
-	private UserRepository userRepository;
     @Autowired
     private CartService cartService;
 
     @GetMapping("/{customerId}")
     public ResponseEntity<?> getCustomerCart(@PathVariable("customerId") String customerId) {
+        // TODO Line below not supposed to be here, we will create customer carts during registration
         cartService.createCartForCustomer(customerId);
 
+        CustomerCart cart = cartService.getCustomerCart(customerId);
         Map<String, Object> responseBody = new HashMap<>();
-        responseBody.put("message", "worked");
-        
-        Optional<User> findUser = userRepository.findById(customerId);
-        System.out.println("Present: " + findUser.isPresent());
-
+        responseBody.put("message", "success");
+        responseBody.put("cart", cartService.cartToJsonMapping(cart));
         return ResponseEntity.ok().body(responseBody);    		
     }
 
     @PutMapping("/{customerId}/items")
     public ResponseEntity<?> updateCustomerCart(@PathVariable("customerId") String customerId, @RequestBody CustomerCart cart) {
-        
-        System.out.println(cart);
-        System.out.println(cart.getItems());        
+        List<Map<String,Object>> failedEntries = cartService.updateCustomerCart(customerId, cart.getItems());
         Map<String, Object> responseBody = new HashMap<>();
-        responseBody.put("message", "worked");
-        
-        Optional<User> findUser = userRepository.findById(customerId);
-        System.out.println("Present: " + findUser.isPresent());
-
+        if (!failedEntries.isEmpty()) {
+            responseBody.put("message", "The following items have failed. They are either less than 0 or the item does not have enough stock");
+            responseBody.put("failedItems", failedEntries);
+            return ResponseEntity.badRequest().body(responseBody);
+        }
+        responseBody.put("message", "success");
         return ResponseEntity.ok().body(responseBody);    		
     }
     

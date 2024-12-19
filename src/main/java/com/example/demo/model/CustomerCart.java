@@ -16,6 +16,10 @@ public class CustomerCart {
     @Field("items")
     private List<CustomerCartEntry> items;
     
+    public String getCartId() {
+        return cartId;
+    }
+
     public List<CustomerCartEntry> getItems() {
         return items;
     }

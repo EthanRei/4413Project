@@ -1,6 +1,10 @@
 package com.example.demo.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -19,6 +23,9 @@ public class CartService {
     @Autowired
     private CartRepository cartRepository;
 
+    @Autowired
+    private MongoTemplate mongoTemplate;
+
     /**
      * Creates customer cart given cutomer ID.
      * If the customer already has associated cart, a cart is not created
@@ -30,6 +37,10 @@ public class CartService {
         cart.setItems(new ArrayList<CustomerCartEntry>());
         cart.setCustomerId(customerId);
         cartRepository.save(cart);
+    }
+
+    public CustomerCart getCustomerCart(String customerId) {
+        return cartRepository.findByCustomerId(customerId).get();
     }
 
     /**
@@ -46,20 +57,20 @@ public class CartService {
 
         for (CustomerCartEntry updateEntry: newValues) {
             String itemId = updateEntry.getItemId();
-            int newQty = (int) updateEntry.getQty();
+            int newQty = updateEntry.getQty();
 
             // Check if newQty is valid
             if (newQty < 0 || newQty > 10000) {
                 // 10000 is temporary
                 //TODO Check if qty is over current stock when catalog is implemented
-                failedItems.add(updateEntry);
+                failedItems.add(cartItemToJsonMapping(updateEntry));
                 continue;
             }
 
             // Update qty in items
             boolean found = false;
             for (int i = 0; i < items.size(); i++) {
-                if (items.get(i).getItemId() == itemId) {
+                if (items.get(i).getItemId().equals(itemId)) {
                     found = true;
                     if (newQty == 0) {
                         items.remove(i);
@@ -71,6 +82,7 @@ public class CartService {
                 }
             }
 
+            System.out.println(found);
             // If not in items, add to items
             if (!found && newQty > 0) {
                 CustomerCartEntry newEntry = new CustomerCartEntry();
@@ -79,10 +91,16 @@ public class CartService {
                 items.add(newEntry);
             }
         }
-        cartRepository.save(cart);
+
+        // TODO Move this code to a DAO
+        Query query = new Query(Criteria.where("customerId").is(customerId));
+        Update update = new Update().set("items", items);
+        mongoTemplate.updateFirst(query, update, "customerCart");
         return failedItems;
 
     }
+
+    
 
 
     // Utility Methods
