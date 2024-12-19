@@ -10,6 +10,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
+import com.example.demo.exception.ProductNotFoundException;
 import com.example.demo.model.Item;
 import com.example.demo.repository.ItemRepository;
 
@@ -44,15 +45,16 @@ public class CatalogService {
 		return itemRepository.findAllById(itemIds);
 	}
 
-	public Item getItemById(String itemID) {
-        return itemRepository.findById(itemID).orElse(null);
+	public Item getItemById(String itemID) throws ProductNotFoundException {		
+		Item item = itemRepository.findById(itemID).orElse(null);
+        if (item != null) { return item; }
+
+        // No item found
+        throw new ProductNotFoundException();
 	}
 
-	public Item updateItemQuantity(String itemID, int newQuantity) {
+	public Item updateItemQuantity(String itemID, int newQuantity) throws ProductNotFoundException{
 		Item existingItem = getItemById(itemID);
-		
-		//item not found
-		if (existingItem == null) { return null; }
 		existingItem.setQuantity(newQuantity);
 		return itemRepository.save(existingItem);
 	}

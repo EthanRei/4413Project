@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.demo.exception.ProductNotFoundException;
 import com.example.demo.model.Item;
 import com.example.demo.repository.ItemRepository;
 import com.example.demo.service.CatalogService;
@@ -45,30 +46,29 @@ public class CatalogController {
 	
 	@GetMapping("/catalog/{itemId}")
 	public ResponseEntity<?> getProduct(@PathVariable("itemId") String itemId){
-
-		Item item = catalogService.getItemById(itemId);
-		if (item != null) {
-			Map<String, Object> responseBody = new HashMap<>();
+		Map<String, Object> responseBody = new HashMap<>();
+		try{
+			Item item = catalogService.getItemById(itemId);
 			responseBody.put("message", "success");
 			responseBody.put("item", item);
 			return ResponseEntity.ok(responseBody);
+		} catch (ProductNotFoundException e) {
+			responseBody.put("message", "no product found with id - "+itemId);
+			return ResponseEntity.status(404).body(responseBody);
 		}
-		return ResponseEntity.status(404).body("{\"message\": \"no product found\"}");
-		
-		
 	}
 
 	@PutMapping("/catalog/{itemId}/quantity")
 	public ResponseEntity<?> updateProductInventory(@PathVariable("itemId") String itemId, @RequestParam(name = "qty", required = true) int qty){
-		
-		Item item = catalogService.updateItemQuantity(itemId, qty);
-
-		if (item != null) {
-			Map<String, Object> responseBody = new HashMap<>();
+		Map<String, Object> responseBody = new HashMap<>();
+		try{
+			catalogService.updateItemQuantity(itemId, qty);
 			responseBody.put("message", "success");
 			return ResponseEntity.ok(responseBody);
+		} catch (ProductNotFoundException e) {
+			responseBody.put("message", "no product found with id - "+itemId);
+			return ResponseEntity.status(404).body(responseBody);
 		}
-		return ResponseEntity.status(404).body("{\"message\": \"no product found\"}");
 	}
 
 	// TODO Remove this, temporarily use it to populate db with items

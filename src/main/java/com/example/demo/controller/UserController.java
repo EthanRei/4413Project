@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.demo.exception.UserNotFoundException;
 import com.example.demo.model.Admin;
 import com.example.demo.model.User;
 import com.example.demo.service.AdminService;
@@ -43,57 +44,61 @@ public class UserController {
     // GET /api/im/info/{CustomerID}
     
     
-    @GetMapping("/info/{customerID}")
-    public ResponseEntity<?> getCustomerInfo(@PathVariable String customerID) {
+    @GetMapping("/info/{customerId}")
+    public ResponseEntity<?> getCustomerInfo(@PathVariable("customerId") String customerId) {
     	// Fetch the customer from the ID GIVEN to us
-        User customer = userService.getCustomerById(customerID);
-        
-        if (customer != null) {
-        	return ResponseEntity.ok(customer);
-        } else {
-            return ResponseEntity.status(404).body("{\"message\": \"Customer not found\"}");
+
+        Map<String, Object> responseBody = new HashMap<>();
+        try {
+            return ResponseEntity.ok().body(userService.getCustomerById(customerId));   
+        } catch (UserNotFoundException e) {
+            responseBody.put("message", "customer not found with id - " + customerId);
+            return ResponseEntity.status(404).body(responseBody);   
         }
     }
     
     
     // TODO THIS MAYBE HAS TO CHANGE
-    @PutMapping("/info/{customerID}")
-    public ResponseEntity<?> updateCustomerInfo(@PathVariable String customerID, @RequestBody User updatedUser) {
+    @PutMapping("/info/{customerId}")
+    public ResponseEntity<?> updateCustomerInfo(@PathVariable("customerId") String customerId, @RequestBody User updatedUser) {
+        Map<String, Object> responseBody = new HashMap<>();
+        try {
+            User existingUser = userService.getCustomerById(customerId);
+            // CHECKING if any fields need an update.
+            if (updatedUser.getUsername() != null) {
+                existingUser.setUsername(updatedUser.getUsername());
+            }
+            if (updatedUser.getPassword() != null) {
+                existingUser.setPassword(updatedUser.getPassword());
+            }
+            if (updatedUser.getFirstName() != null) {
+                existingUser.setFirstName(updatedUser.getFirstName());
+            }
+            if (updatedUser.getLastName() != null) {
+                existingUser.setLastName(updatedUser.getLastName());
+            }
+            if (updatedUser.getEmail() != null) {
+                existingUser.setEmail(updatedUser.getEmail());
+            }  
+            if (updatedUser.getCreditCardNumber() != null) {
+                existingUser.setCreditCardNumber(updatedUser.getCreditCardNumber());
+            }
+            if (updatedUser.getAddress() != null) {
+                existingUser.setAddress(updatedUser.getAddress());
+            }
 
-    	User existingUser = userService.getCustomerById(customerID);
+            User savedUser = userService.updateUser(existingUser);
 
-        if (existingUser == null) {
-            return ResponseEntity.status(404).body("{\"message\": \"Customer not found\"}");
+            return ResponseEntity.ok(savedUser);
+            
+        } catch (UserNotFoundException e) {
+            responseBody.put("message", "customer not found with id - " + customerId);
+            return ResponseEntity.status(404).body(responseBody);   
         }
 
        
         
-        // CHECKING if any fields need an update.
-        if (updatedUser.getUsername() != null) {
-        	existingUser.setUsername(updatedUser.getUsername());
-        }
-        if (updatedUser.getPassword() != null) {
-        	existingUser.setPassword(updatedUser.getPassword());
-        }
-        if (updatedUser.getFirstName() != null) {
-        	existingUser.setFirstName(updatedUser.getFirstName());
-        }
-        if (updatedUser.getLastName() != null) {
-        	existingUser.setLastName(updatedUser.getLastName());
-        }
-        if (updatedUser.getEmail() != null) {
-        	existingUser.setEmail(updatedUser.getEmail());
-        }  
-        if (updatedUser.getCreditCardNumber() != null) {
-        	existingUser.setCreditCardNumber(updatedUser.getCreditCardNumber());
-        }
-        if (updatedUser.getAddress() != null) {
-        	existingUser.setAddress(updatedUser.getAddress());
-        }
-
-        User savedUser = userService.updateUser(existingUser);
-
-        return ResponseEntity.ok(savedUser);
+        
     }
     
     
@@ -101,10 +106,6 @@ public class UserController {
     public ResponseEntity<?> getAllUsers() {
     	
         List<User> users = userService.getUsers();
-
-        if (users.isEmpty()) {
-            return ResponseEntity.status(404).body("{\"message\": \"No users found\"}");
-        }
 
         Map<String, Object> response = new HashMap<>();
         response.put("message", "Users retrieved successfully");
