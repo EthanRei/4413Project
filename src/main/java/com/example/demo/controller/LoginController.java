@@ -1,5 +1,8 @@
 package com.example.demo.controller;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -30,15 +33,18 @@ public class LoginController {
     	System.out.println("Received Username " + loginRequest.getUsername());
     	System.out.println("Received Password " + loginRequest.getPassword());
 
-    	boolean user_exists = userservice.checkUserExists(loginRequest.getUsername(), loginRequest.getPassword());
-    	
-    			
+    	boolean user_exists = userservice.checkValidUser(loginRequest.getUsername(), loginRequest.getPassword());
+        Map<String, Object> responseBody = new HashMap<>();
     	if (user_exists) {
-    		// thats good, and the user can sign in 
-            return ResponseEntity.ok().body("{\"message\": \"Success!\"}");    		
+    		// thats good, and the user can sign in
+            User user = userservice.getCustomerByUsername(loginRequest.getUsername());
+            responseBody.put("message", "success");
+            responseBody.put("userId", user.getUserId());
+            return ResponseEntity.ok().body(responseBody);    		
     	}
     	else {
-            return ResponseEntity.status(401).body("{\"message\": \"Invalid credentials\"}");
+            responseBody.put("message", "Invalid Credentials");
+            return ResponseEntity.status(401).body(responseBody);
 
     	}
     }
@@ -57,24 +63,25 @@ public class LoginController {
             return ResponseEntity.status(401).body("{\"message\": \"Invalid credentials- ADMIN\"}");
 
     	}
-    	
-    	
-    	
     }
     
     @PostMapping("/im/register")
     public ResponseEntity<?> registerUser(@RequestBody User user) {    	
     	// existing user is showiung up as true when checking the database.        
-        if (userservice.checkUserExists(user.getUsername(), user.getPassword())) {
-            // If user exists already
-            return ResponseEntity.status(400).body("{\"message\": \"User already exists\"}");
+        if (userservice.getCustomerByUsername(user.getUsername()) != null) {
+            // Username already taken
+            return ResponseEntity.status(400).body("{\"message\": \"Username already exists\"}");
         }
-        // Save the user to the database
-        userservice.registerNewUser(user);
 
-        return ResponseEntity.ok("{\"message\": \"User registered successfully\"}");
-        //return ResponseEntity.ok(user1); - this is for testing the endpoints that need the ID
+        // Register the user to the database
+        User newUser = userservice.registerNewUser(user);
 
+        Map<String, Object> responseBody = new HashMap<>();
+        responseBody.put("message", "User registered successfully");
+        responseBody.put("userId", newUser.getUserId());
+
+
+        return ResponseEntity.ok(responseBody);    
     }
 
 }
