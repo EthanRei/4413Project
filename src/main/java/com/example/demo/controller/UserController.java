@@ -28,7 +28,7 @@ public class UserController {
 
     @RequestMapping(value = "/user", method = RequestMethod.POST)
     public User addUser(@RequestBody User user) {
-        return userService.addUser(user);
+        return userService.registerNewUser(user);
     }
     
     @RequestMapping(value = "/admin", method = RequestMethod.POST)
@@ -87,7 +87,7 @@ public class UserController {
         	existingUser.setAddress(updatedUser.getAddress());
         }
 
-        User savedUser = userService.addUser(existingUser);
+        User savedUser = userService.registerNewUser(existingUser);
 
         return ResponseEntity.ok(savedUser);
     }

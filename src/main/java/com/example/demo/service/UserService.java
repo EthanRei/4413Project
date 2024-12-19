@@ -15,7 +15,7 @@ public class UserService {
      @Autowired
      private CartService cartService;
 
-     public User addUser(User user) {
+     public User registerNewUser(User user) {
         User savedUser = userRepository.save(user);
         savedUser.getUserId();
         cartService.createCartForCustomer(savedUser.getUserId());

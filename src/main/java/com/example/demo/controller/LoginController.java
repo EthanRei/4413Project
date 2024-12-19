@@ -70,7 +70,7 @@ public class LoginController {
             return ResponseEntity.status(400).body("{\"message\": \"User already exists\"}");
         }
         // Save the user to the database
-        userservice.addUser(user);
+        userservice.registerNewUser(user);
 
         return ResponseEntity.ok("{\"message\": \"User registered successfully\"}");
         //return ResponseEntity.ok(user1); - this is for testing the endpoints that need the ID
