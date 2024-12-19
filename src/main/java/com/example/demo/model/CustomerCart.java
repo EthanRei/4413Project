@@ -14,16 +14,16 @@ public class CustomerCart {
     @Field("customerId")
     private String customerId;
     @Field("items")
-    private List<CustomerCartEntry> items;
+    private List<ItemEntry> items;
     
     public String getCartId() {
         return cartId;
     }
 
-    public List<CustomerCartEntry> getItems() {
+    public List<ItemEntry> getItems() {
         return items;
     }
-    public void setItems(List<CustomerCartEntry> items) {
+    public void setItems(List<ItemEntry> items) {
         this.items = items;
     }
     public String getCustomerId() {

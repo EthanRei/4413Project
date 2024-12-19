@@ -2,7 +2,7 @@ package com.example.demo.model;
 
 import org.springframework.data.mongodb.core.mapping.Field;
 
-public class CustomerCartEntry {
+public class ItemEntry {
     @Field("itemId")
     private String itemId;
     @Field("qty")
