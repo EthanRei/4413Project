@@ -21,8 +21,7 @@ public class LoginController {
 	@Autowired
 	private UserService userservice; 
 	@Autowired
-	private AdminService adminservice;
-	
+	private AdminService adminservice;	
 	
     @PostMapping("/im/signin")
     public ResponseEntity<?> checkUser(@RequestBody LoginRequest loginRequest) {
@@ -64,20 +63,14 @@ public class LoginController {
     }
     
     @PostMapping("/im/register")
-    public ResponseEntity<?> registerUser(@RequestBody User user) {
-        // Check if the user already exists
-    	
-    	// exisitng user is showiung up as true when checking the database.
-        boolean existingUser = userservice.checkUserExists(user.getUsername(), user.getPassword());
-        
-        
-        if (existingUser) {
+    public ResponseEntity<?> registerUser(@RequestBody User user) {    	
+    	// existing user is showiung up as true when checking the database.        
+        if (userservice.checkUserExists(user.getUsername(), user.getPassword())) {
             // If user exists already
             return ResponseEntity.status(400).body("{\"message\": \"User already exists\"}");
         }
-
         // Save the user to the database
-        userservice.addUser(user);
+        userservice.registerNewUser(user);
 
         return ResponseEntity.ok("{\"message\": \"User registered successfully\"}");
         //return ResponseEntity.ok(user1); - this is for testing the endpoints that need the ID

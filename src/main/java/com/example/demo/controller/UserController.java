@@ -28,7 +28,7 @@ public class UserController {
 
     @RequestMapping(value = "/user", method = RequestMethod.POST)
     public User addUser(@RequestBody User user) {
-        return userService.addUser(user);
+        return userService.registerNewUser(user);
     }
     
     @RequestMapping(value = "/admin", method = RequestMethod.POST)
@@ -41,11 +41,8 @@ public class UserController {
     
     @GetMapping("/info/{customerID}")
     public ResponseEntity<?> getCustomerInfo(@PathVariable String customerID) {
-    	
-    	
     	// Fetch the customer from the ID GIVEN to us
         User customer = userService.getCustomerById(customerID);
-        
         
         if (customer != null) {
         	return ResponseEntity.ok(customer);
@@ -55,7 +52,7 @@ public class UserController {
     }
     
     
-    // THIS MAYBE HAS TO CHANGE
+    // TODO THIS MAYBE HAS TO CHANGE
     @PutMapping("/info/{customerID}")
     public ResponseEntity<?> updateCustomerInfo(@PathVariable String customerID, @RequestBody User updatedUser) {
 
@@ -83,14 +80,14 @@ public class UserController {
         if (updatedUser.getEmail() != null) {
         	existingUser.setEmail(updatedUser.getEmail());
         }
-        if (updatedUser.getCreditCardId() != null) {
-        	existingUser.setCreditCardId(updatedUser.getCreditCardId());
+        if (updatedUser.getCreditCardNumber() != null) {
+        	existingUser.setCreditCardNumber(updatedUser.getCreditCardNumber());
         }
         if (updatedUser.getAddress() != null) {
         	existingUser.setAddress(updatedUser.getAddress());
         }
 
-        User savedUser = userService.addUser(existingUser);
+        User savedUser = userService.registerNewUser(existingUser);
 
         return ResponseEntity.ok(savedUser);
     }
