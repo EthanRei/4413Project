@@ -19,8 +19,6 @@ import org.springframework.data.annotation.Id;
     private String lastName;
     @Field("creditCardNumber")
     private String creditCardNumber;
-    @Field("creditCardCVV")
-    private String creditCardCVV;
     @Field("address")
     private String address;
     @Field("email")
@@ -58,14 +56,6 @@ import org.springframework.data.annotation.Id;
 
     public void setCreditCardNumber(String creditCardNumber) {
         this.creditCardNumber = creditCardNumber;
-    }
-
-    public String getCreditCardCVV() {
-        return creditCardCVV;
-    }
-
-    public void setCreditCardCVV(String creditCardCVV) {
-        this.creditCardCVV = creditCardCVV;
     }
     public String getEmail() {
         return email;

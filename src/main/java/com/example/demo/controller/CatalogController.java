@@ -33,7 +33,6 @@ public class CatalogController {
 	@GetMapping("/catalog")
 	public ResponseEntity<?> getAllItems(@RequestParam(name="brand", required=false) String brand, @RequestParam(name="category", required=false) String category) {
         Map<String, String> filters = new HashMap<>();
-		System.out.println(brand);
 		if (brand != null) { filters.put("brand", brand); }
 		if (category != null) { filters.put("category", category); }
 		List<Item> catalogItems = catalogService.getCatalogItems(filters);

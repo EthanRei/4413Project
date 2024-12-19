@@ -14,7 +14,7 @@ import java.util.Map;
 import java.util.List;
 
 import com.example.demo.model.CustomerCart;
-import com.example.demo.model.CustomerCartEntry;
+import com.example.demo.model.ItemEntry;
 import com.example.demo.model.Item;
 import com.example.demo.repository.CartRepository;
 
@@ -25,7 +25,6 @@ public class CartService {
     private CartRepository cartRepository;
     @Autowired
     private CatalogService catalogService;
-
     @Autowired
     private MongoTemplate mongoTemplate;
 
@@ -37,7 +36,7 @@ public class CartService {
         if (customerHasCart(customerId)) {return ;}
 
         CustomerCart cart = new CustomerCart();
-        cart.setItems(new ArrayList<CustomerCartEntry>());
+        cart.setItems(new ArrayList<ItemEntry>());
         cart.setCustomerId(customerId);
         cartRepository.save(cart);
     }
@@ -53,12 +52,12 @@ public class CartService {
      * list of item ids with problematic quantities (succesful cart entries are still
      * updated).
      */
-    public List<Map<String, Object>> updateCustomerCart(String customerId, List<CustomerCartEntry> newValues) {
+    public List<Map<String, Object>> updateCustomerCart(String customerId, List<ItemEntry> newValues) {
         CustomerCart cart = cartRepository.findByCustomerId(customerId).get();
-        List<CustomerCartEntry> items = cart.getItems();
+        List<ItemEntry> items = cart.getItems();
         List<Map<String, Object>> failedItems = new ArrayList<Map<String, Object>>();
 
-        for (CustomerCartEntry updateEntry: newValues) {
+        for (ItemEntry updateEntry: newValues) {
             String itemId = updateEntry.getItemId();
             Item catalogItem = catalogService.getItemById(itemId);
             if (catalogItem == null) {
@@ -90,7 +89,7 @@ public class CartService {
             System.out.println(found);
             // If not in items, add to items
             if (!found && newQty > 0) {
-                CustomerCartEntry newEntry = new CustomerCartEntry();
+                ItemEntry newEntry = new ItemEntry();
                 newEntry.setItemId(itemId);
                 newEntry.setQty(newQty);
                 items.add(newEntry);
@@ -105,9 +104,13 @@ public class CartService {
 
     }
 
+    public void clearCustomerCart(String customerId) {
+        // TODO Move this code to a DAO
+        Query query = new Query(Criteria.where("customerId").is(customerId));
+        Update update = new Update().set("items", new ArrayList<ItemEntry>());
+        mongoTemplate.updateFirst(query, update, "customerCart");
+    }
     
-
-
     // Utility Methods
 
     /**
@@ -123,14 +126,14 @@ public class CartService {
         Map<String, Object> cartMap = new HashMap<>();
         cartMap.put("customerId", cart.getCustomerId());
         List<Map<String, Object>> itemList = new ArrayList<>();
-        for (CustomerCartEntry entry: cart.getItems()) {
+        for (ItemEntry entry: cart.getItems()) {
             itemList.add(cartItemToJsonMapping(entry));
         }
         cartMap.put("items", itemList);
         return cartMap;
     }
 
-    public Map<String, Object> cartItemToJsonMapping(CustomerCartEntry item) {
+    public Map<String, Object> cartItemToJsonMapping(ItemEntry item) {
         
         Map<String, Object> mappedEntry = new HashMap<>();
         mappedEntry.put("itemId", item.getItemId());

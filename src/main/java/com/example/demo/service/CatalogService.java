@@ -40,20 +40,20 @@ public class CatalogService {
         return items;
 	}
 
+	public List<Item> getItemsByIds(List<String> itemIds) {
+		return itemRepository.findAllById(itemIds);
+	}
+
 	public Item getItemById(String itemID) {
         return itemRepository.findById(itemID).orElse(null);
 	}
 
 	public Item updateItemQuantity(String itemID, int newQuantity) {
-		
 		Item existingItem = getItemById(itemID);
 		
 		//item not found
 		if (existingItem == null) { return null; }
-		
 		existingItem.setQuantity(newQuantity);
-		
 		return itemRepository.save(existingItem);
 	}
-
 }

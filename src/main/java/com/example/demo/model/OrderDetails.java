@@ -1,24 +1,35 @@
 package com.example.demo.model;
 
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
+
+import java.util.Date;
+import java.util.List;
+
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 
 @Document
 public class OrderDetails {
     @Id
     private String orderId;
+    @Field("customerId")
     private String customerId;
-    private int total;
-    private String date;
+    @Field("total") 
+    private double total;
+    @Field("date")
+    private Date date;
+    @Field("billInfo")
+    private BillInfo billInfo;
+    @Field("items")
+    private List<ItemEntry> items;
 
-    public OrderDetails(String orderId, String customerId, int total, String date) {
-        super();
-        this.orderId = orderId;
-        this.customerId = customerId;
-        this.total = total;
-        this.date = date;
+    public List<ItemEntry> getItems() {
+        return items;
     }
-
+    public void setItems(List<ItemEntry> items) {
+        this.items = items;
+    }
     public String getOrderId() {
         return orderId;
     }
@@ -31,19 +42,22 @@ public class OrderDetails {
     public void setCustomerId(String customerId) {
         this.customerId = customerId;
     }
-    public int getTotal() {
+    public double getTotal() {
         return total;
     }
-    public void setTotal(int total) {
+    public void setTotal(double total) {
         this.total = total;
     }
-    public String getDate() {
+    public Date getDate() {
         return date;
     }
-    public void setDate(String date) {
+    public void setDate(Date date) {
         this.date = date;
     }
-
-    
-    
+    public BillInfo getBillInfo() {
+        return billInfo;
+    }
+    public void setBillInfo(BillInfo billInfo) {
+        this.billInfo = billInfo;
+    }
 }
