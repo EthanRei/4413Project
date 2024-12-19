@@ -86,6 +86,9 @@ public class UserController {
         if (updatedUser.getEmail() != null) {
         	existingUser.setEmail(updatedUser.getEmail());
         }
+        if (updatedUser.getCreditCardCVV() != null) {
+        	existingUser.setCreditCardCVV(updatedUser.getCreditCardCVV());
+        }
         if (updatedUser.getCreditCardNumber() != null) {
         	existingUser.setCreditCardNumber(updatedUser.getCreditCardNumber());
         }
@@ -93,7 +96,7 @@ public class UserController {
         	existingUser.setAddress(updatedUser.getAddress());
         }
 
-        User savedUser = userService.registerNewUser(existingUser);
+        User savedUser = userService.updateUser(existingUser);
 
         return ResponseEntity.ok(savedUser);
     }
