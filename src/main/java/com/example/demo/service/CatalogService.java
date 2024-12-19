@@ -1,44 +1,59 @@
 package com.example.demo.service;
 
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.model.Item;
-import com.example.demo.repository.CatalogRepository;
+import com.example.demo.repository.ItemRepository;
 
 
 @Service
 public class CatalogService {
 	
     @Autowired
-    private CatalogRepository catalogRepository;
+    private ItemRepository itemRepository;
+	@Autowired
+	private MongoTemplate mongoTemplate;
 
-	public List<Item> getAllCatalogItems() {
-		// TODO Auto-generated method stub
+	public List<Item> getCatalogItems(Map<String, String> filters) {
 		
-        return catalogRepository.findAll();
+		// TODO Move to a DAO
+		if (filters.size() == 0) { return itemRepository.findAll(); }
+
+		Query query = new Query();
+
+		Iterator<String> filterKeys = filters.keySet().iterator();
+		while(filterKeys.hasNext()) {
+			String currFilter = filterKeys.next();
+			query.addCriteria(Criteria.where(currFilter).is(filters.get(currFilter)));
+		}
+		
+		List<Item> items = mongoTemplate.find(query, Item.class);
+
+        return items;
 	}
 
 	public Item getItemById(String itemID) {
-		// TODO Auto-generated method stub
-        return catalogRepository.findById(itemID).orElse(null);
+        return itemRepository.findById(itemID).orElse(null);
 	}
 
 	public Item updateItemQuantity(String itemID, int newQuantity) {
-		// TODO Auto-generated method stub
 		
-		Item existingItem = catalogRepository.findById(itemID).orElse(null);
+		Item existingItem = getItemById(itemID);
 		
-		if (existingItem == null) {
-			//item not found
-			return null;
-		}
+		//item not found
+		if (existingItem == null) { return null; }
 		
-		existingItem.setQty(newQuantity);
+		existingItem.setQuantity(newQuantity);
 		
-		return catalogRepository.save(existingItem);
+		return itemRepository.save(existingItem);
 	}
 
 }

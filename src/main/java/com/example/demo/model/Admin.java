@@ -1,14 +1,12 @@
 package com.example.demo.model;
 
 import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.data.mongodb.core.mapping.Field;
 import org.springframework.data.annotation.Id;
 
 @Document
 public class Admin {
 	
 	@Id
-	@Field("AdminId")
 	private String id;
 	private String username; 
 	private String password;
