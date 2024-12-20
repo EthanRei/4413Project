@@ -40,7 +40,7 @@ public class CartService {
     }
 
     public CustomerCart getCustomerCart(String customerId) throws CustomerCartNotFoundException{
-        CustomerCart cart = cartRepository.findByCustomerId(customerId).get();
+        CustomerCart cart = cartRepository.findByCustomerId(customerId).orElse(null);
         if (cart != null) { return cart; }
 
         // No cart found
