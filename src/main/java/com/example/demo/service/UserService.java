@@ -7,11 +7,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import com.example.demo.dao.repository.AdminRepository;
+import com.example.demo.dao.repository.UserRepository;
 import com.example.demo.exception.UserNotFoundException;
 import com.example.demo.model.Admin;
 import com.example.demo.model.User;
-import com.example.demo.repository.AdminRepository;
-import com.example.demo.repository.UserRepository;
 
 @Service
 public class UserService {
