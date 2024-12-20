@@ -11,24 +11,25 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.exception.UserNotFoundException;
-import com.example.demo.model.AdminRequest;
-import com.example.demo.model.LoginRequest;
+import com.example.demo.model.Admin;
 import com.example.demo.model.User;
-import com.example.demo.service.AdminService;
 import com.example.demo.service.UserService;
 
 @RestController
 @RequestMapping("/api")
 public class LoginController {
 	
-	
 	@Autowired
-	private UserService userservice; 
-	@Autowired
-	private AdminService adminservice;	
+	private UserService userservice; 	
+
+    // TODO Remove, not for actual deployment
+    @PostMapping("/im/admin")
+    public Admin addAdmin(@RequestBody Admin admin) {
+        return userservice.addAdmin(admin);
+    }
 	
     @PostMapping("/im/signin")
-    public ResponseEntity<?> checkUser(@RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<?> checkUser(@RequestBody User loginRequest) {
     	System.out.println("Received Username " + loginRequest.getUsername());
     	System.out.println("Received Password " + loginRequest.getPassword());
 
@@ -51,11 +52,11 @@ public class LoginController {
     }
     
     @PostMapping("/admincheck")
-    public ResponseEntity<?> checkAdmin(@RequestBody AdminRequest adminRequest) {
+    public ResponseEntity<?> checkAdmin(@RequestBody User adminRequest) {
         System.out.println("Received Username: " + adminRequest.getUsername());
         System.out.println("Received Password: " + adminRequest.getPassword());
 
-    	boolean admin_exists = adminservice.validateAdmin(adminRequest.getUsername(), adminRequest.getPassword());
+    	boolean admin_exists = userservice.validateAdmin(adminRequest.getUsername(), adminRequest.getPassword());
     	if (admin_exists) {
     		// thats good, and the user can sign in 
             return ResponseEntity.ok().body("{\"message\": \"Admin exists\"}");    		

@@ -1,6 +1,7 @@
 package com.example.demo.model;
 
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 import org.springframework.data.annotation.Id;
 
 @Document
@@ -8,8 +9,11 @@ public class Admin {
 	
 	@Id
 	private String id;
+	@Field("username")
 	private String username; 
+	@Field("password")
 	private String password;
+	@Field("email")
 	private String email;
 	
 	
