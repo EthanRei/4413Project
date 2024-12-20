@@ -106,6 +106,7 @@ public class OrderService {
         OrderDetails orderDetails = new OrderDetails();
         orderDetails.setCustomerId(customerId);
         orderDetails.setItems(orderEntries);
+        total *= 1.13;
         orderDetails.setTotal(total);
         orderDetails.setBillInfo(billInfo);
         orderDetails.setDate(new Date());
