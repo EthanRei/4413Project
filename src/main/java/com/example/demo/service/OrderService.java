@@ -118,7 +118,7 @@ public class OrderService {
 	}
 
     public OrderDetails getOrder(String orderId) throws OrderNotFoundException{
-        OrderDetails order = ordersRepository.findById(orderId).get();
+        OrderDetails order = ordersRepository.findById(orderId).orElse(null);
         if (order != null) { return order; }
 
         // No order found
