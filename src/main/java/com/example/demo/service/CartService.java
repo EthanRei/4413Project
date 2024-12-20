@@ -1,10 +1,6 @@
 package com.example.demo.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -12,12 +8,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
 
+import com.example.demo.dao.repository.CartRepository;
+import com.example.demo.dao.service.CartDAO;
 import com.example.demo.exception.CustomerCartNotFoundException;
 import com.example.demo.exception.ProductNotFoundException;
 import com.example.demo.model.CustomerCart;
 import com.example.demo.model.ItemEntry;
 import com.example.demo.model.Item;
-import com.example.demo.repository.CartRepository;
 
 @Service
 public class CartService {
@@ -27,7 +24,7 @@ public class CartService {
     @Autowired
     private CatalogService catalogService;
     @Autowired
-    private MongoTemplate mongoTemplate;
+    private CartDAO cartDAO;
 
     /**
      * Creates customer cart given cutomer ID.
@@ -101,19 +98,13 @@ public class CartService {
             }            
         }
 
-        // TODO Move this code to a DAO
-        Query query = new Query(Criteria.where("customerId").is(customerId));
-        Update update = new Update().set("items", items);
-        mongoTemplate.updateFirst(query, update, "customerCart");
+        cartDAO.updateCustomerCart(customerId, items);
         return failedItems;
 
     }
 
     public void clearCustomerCart(String customerId) {
-        // TODO Move this code to a DAO
-        Query query = new Query(Criteria.where("customerId").is(customerId));
-        Update update = new Update().set("items", new ArrayList<ItemEntry>());
-        mongoTemplate.updateFirst(query, update, "customerCart");
+        cartDAO.clearCustomerCart(customerId);
     }
     
     // Utility Methods

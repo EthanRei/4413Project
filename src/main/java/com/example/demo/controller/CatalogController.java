@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.exception.ProductNotFoundException;
 import com.example.demo.model.Item;
-import com.example.demo.repository.ItemRepository;
+import com.example.demo.dao.repository.ItemRepository;
 import com.example.demo.service.CatalogService;
 
 @RestController

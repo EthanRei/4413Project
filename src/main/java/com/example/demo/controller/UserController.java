@@ -37,10 +37,8 @@ public class UserController {
             responseBody.put("message", "customer not found with id - " + customerId);
             return ResponseEntity.status(404).body(responseBody);   
         }
-    }
+    } 
     
-    
-    // TODO THIS MAYBE HAS TO CHANGE
     @PutMapping("/info/{customerId}")
     public ResponseEntity<?> updateCustomerInfo(@PathVariable("customerId") String customerId, @RequestBody User updatedUser) {
         Map<String, Object> responseBody = new HashMap<>();

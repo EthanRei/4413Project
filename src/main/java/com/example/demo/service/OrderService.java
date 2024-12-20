@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import com.example.demo.dao.repository.OrdersRepository;
 import com.example.demo.exception.BadRequestException;
 import com.example.demo.exception.CustomerCartNotFoundException;
 import com.example.demo.exception.OrderNotFoundException;
@@ -16,17 +17,16 @@ import com.example.demo.model.CustomerCart;
 import com.example.demo.model.ItemEntry;
 import com.example.demo.model.OrderDetails;
 import com.example.demo.model.Item;
-import com.example.demo.repository.OrdersRepository;
 
 @Service
 public class OrderService {
     
     @Autowired
-    OrdersRepository ordersRepository;
+    private OrdersRepository ordersRepository;
     @Autowired
-    CartService cartService;
+    private CartService cartService;
     @Autowired
-    CatalogService catalogService;
+    private CatalogService catalogService;
 
     public OrderDetails createOrderForCustomer(String customerId, BillInfo billInfo) 
     throws CustomerCartNotFoundException, BadRequestException, PaymentProcessException, ProductNotFoundException{
