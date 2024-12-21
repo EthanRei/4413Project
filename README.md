@@ -2,6 +2,7 @@
 
 This README is also available on [Github](https://github.com/EthanRei/4413Project)\
 The Frontend react source code can be found under the FRONTEND folder.
+
 ### Integrating the front-end with springboot
 - install node js
 - navigate to the FRONTEND directory
@@ -12,8 +13,9 @@ The Frontend react source code can be found under the FRONTEND folder.
 - move index.html, asset-manifest.json, and manifest.json inside the static folder
 
 ### Running the project via docker image
-Alternatively can pull the image through `docker pull polejimyahoo/project4413:3` [Docker Hub Repo](https://hub.docker.com/layers/polejimyahoo/project4413/3/images/sha256-126b571038d6598bef028217894412158c17e9059a53e6c8d0b136beca559530)\
-The command used to run the image is `docker run -p 8080:8080 polejimyahoo/project4413:3`
+The webapp is running on google cloud run on the following [Link](https://image02-741152878318.us-central1.run.app).
+Alternatively can pull the image through `docker pull polejimyahoo/project4413:02` [Docker Hub Repo](https://hub.docker.com/layers/polejimyahoo/project4413/02/images/sha256-12ca4209a94ae101e0ee60ea5073f81680ac6901290859a4f0a022febcfcd9fb)\
+The command used to run the image is `docker run -p 8080:8080 polejimyahoo/project4413:02`
 
 ### Running the project locally
 - Have java and jdk installed (atleast version 17 but worked on 23)
