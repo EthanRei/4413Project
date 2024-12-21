@@ -1,6 +1,8 @@
 package com.example.demo.service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import com.example.demo.dao.repository.AdminRepository;
 import com.example.demo.dao.repository.UserRepository;
+import com.example.demo.dao.service.UserDAO;
 import com.example.demo.exception.UserNotFoundException;
 import com.example.demo.model.Admin;
 import com.example.demo.model.User;
@@ -21,6 +24,8 @@ public class UserService {
     private AdminRepository adminRepository;
     @Autowired
     private CartService cartService;
+    @Autowired
+    private UserDAO userDAO;
 
     public User registerNewUser(User user) {
         User savedUser = userRepository.save(user);
@@ -60,30 +65,30 @@ public class UserService {
 
 	}
 	public User updateUser(String customerId, User updatedUser) throws UserNotFoundException {
-		User existingUser = getCustomerById(customerId);
         // CHECKING if any fields need an update.
+        Map<String, String> fields = new HashMap<>();
         if (updatedUser.getUsername() != null) {
-            existingUser.setUsername(updatedUser.getUsername());
+            fields.put("username", updatedUser.getUsername());
         }
         if (updatedUser.getPassword() != null) {
-            existingUser.setPassword(updatedUser.getPassword());
+            fields.put("password", updatedUser.getPassword());
         }
         if (updatedUser.getFirstName() != null) {
-            existingUser.setFirstName(updatedUser.getFirstName());
+            fields.put("firstName", updatedUser.getFirstName());
         }
         if (updatedUser.getLastName() != null) {
-            existingUser.setLastName(updatedUser.getLastName());
+            fields.put("lastName", updatedUser.getLastName());
         }
         if (updatedUser.getEmail() != null) {
-            existingUser.setEmail(updatedUser.getEmail());
+            fields.put("email", updatedUser.getEmail());
         }  
         if (updatedUser.getCreditCardNumber() != null) {
-            existingUser.setCreditCardNumber(updatedUser.getCreditCardNumber());
+            fields.put("creditCardNumber", updatedUser.getCreditCardNumber());
         }
         if (updatedUser.getAddress() != null) {
-            existingUser.setAddress(updatedUser.getAddress());
+            fields.put("address", updatedUser.getAddress());
         }
-		return userRepository.save(updatedUser);
+		return userDAO.updateCustomerInfo(customerId, fields);
 	}
 	
     public Admin addAdmin(@RequestBody Admin admin) {
