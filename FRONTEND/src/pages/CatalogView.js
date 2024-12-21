@@ -52,7 +52,7 @@ const CatalogView = () => {
               value={filterType}
               onChange={(e) => {
                 setFilterType(e.target.value);
-                setFilterValue(""); // Reset filter value when type changes
+                setFilterValue("");
               }}
             >
               <option value="All">All</option>
