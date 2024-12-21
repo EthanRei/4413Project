@@ -43,7 +43,7 @@ const SalesHistoryPage = () => {
   }, []);
 
   const fetchProductDetails = async (itemId) => {
-    if (productDetails[itemId]) return productDetails[itemId]; // Avoid refetching
+    if (productDetails[itemId]) return productDetails[itemId]; 
 
     try {
       const data = await fetchProductById(itemId);

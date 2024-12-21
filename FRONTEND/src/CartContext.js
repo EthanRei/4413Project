@@ -1,17 +1,15 @@
 import React, { createContext, useState, useEffect } from "react";
 import { fetchCart, updateCartItems } from "./services/api"; // Import API functions
 
-// Create the CartContext
 export const CartContext = createContext();
 
-// CartContext Provider
 export const CartProvider = ({ children }) => {
   const [cart, setCart] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const initializeCart = async () => {
-      const customerId = localStorage.getItem("customerId"); // Retrieve customerId from local storage
+      const customerId = localStorage.getItem("customerId");
       if (!customerId) {
         console.error("Customer ID not found");
         setCart([]);
@@ -23,19 +21,19 @@ export const CartProvider = ({ children }) => {
         const backendCartResponse = await fetchCart(customerId);
         const backendCart = backendCartResponse.cart.items;
         if (backendCart.length > 0) {
-          setCart(backendCart); // Use backend cart if it exists
-          localStorage.setItem("cart", JSON.stringify(backendCart)); // Sync backend cart to local storage
+          setCart(backendCart); 
+          localStorage.setItem("cart", JSON.stringify(backendCart)); 
         } else {
           const localCart = JSON.parse(localStorage.getItem("cart")) || [];
-          setCart(localCart); // Use local cart if backend cart is empty
+          setCart(localCart); 
           if (localCart.length > 0) {
-            await updateCartItems(customerId, localCart); // Sync local cart to backend
+            await updateCartItems(customerId, localCart); 
           }
         }
       } catch (error) {
         console.error("Error fetching or initializing cart:", error);
       } finally {
-        setIsLoading(false); // Loading complete
+        setIsLoading(false);
       }
     };
   
@@ -58,7 +56,7 @@ export const CartProvider = ({ children }) => {
     const backendCart = {
       items: updatedCart.map((item) => ({
         itemId: item.itemId,
-        qty: item.quantity, // Map "quantity" to "qty"
+        qty: item.quantity, 
       })),
     };
   
@@ -69,7 +67,7 @@ export const CartProvider = ({ children }) => {
     }
   };
 
-  // Add item to cart
+
   const addToCart = (product) => {
     setCart((prevCart) => {
       const existingItem = prevCart.find((item) => item.itemId === product.itemId);
@@ -85,7 +83,7 @@ export const CartProvider = ({ children }) => {
         updatedCart = [...prevCart, { ...product, quantity: 1 }];
       }
   
-      syncCartWithBackend(updatedCart); // Sync updated cart to backend
+      syncCartWithBackend(updatedCart); 
       return updatedCart;
     });
   };
@@ -94,7 +92,7 @@ export const CartProvider = ({ children }) => {
   const removeFromCart = (productId) => {
     setCart((prevCart) => {
       const updatedCart = prevCart.filter((item) => item.itemId !== productId);
-      syncCartWithBackend(updatedCart); // Sync to backend
+      syncCartWithBackend(updatedCart);
       return updatedCart;
     });
   };
@@ -108,7 +106,7 @@ export const CartProvider = ({ children }) => {
       const updatedCart = prevCart.map((item) =>
         item.itemId === productId ? { ...item, quantity: qty } : item
       );
-      syncCartWithBackend(updatedCart); // Sync to backend
+      syncCartWithBackend(updatedCart); 
       return updatedCart;
     });
   };

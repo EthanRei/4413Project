@@ -1,9 +1,9 @@
 import React, { useContext, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { CartContext } from "../CartContext";
-import { createOrder, fetchCustomerInfo } from "../services/api"; // Import the API functions
+import { createOrder, fetchCustomerInfo } from "../services/api"; 
 
-// TODO Remove and use customerId from cartContext
+
 const CheckoutView = () => {
   const [formData, setFormData] = useState({
     address: '',

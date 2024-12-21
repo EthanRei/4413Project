@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { loginAdmin } from "../services/api"; // Import the API function
+import { loginAdmin } from "../services/api"; 
 
 const AdminLogin = () => {
   const [formData, setFormData] = useState({
@@ -18,14 +18,14 @@ const AdminLogin = () => {
       return;
     }
 
-    setError(""); // Clear any previous error
+    setError(""); 
 
     try {
-      // Call the loginAdmin function
+      
       const response = await loginAdmin(formData.username, formData.password);
       console.log("Admin login successful:", response);
 
-      // Redirect to admin dashboard after successful login
+     
       navigate("/adminView");
     } catch (err) {
       console.error("Login error:", err);

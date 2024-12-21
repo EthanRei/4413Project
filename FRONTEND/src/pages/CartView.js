@@ -11,7 +11,7 @@ const CartView = () => {
 
   const handleCheckout = () => {
     console.log("Cart data for checkout:", cart);
-    // Navigate to checkout page in the future
+    
     navigate("/checkout");
   };
 
