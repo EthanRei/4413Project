@@ -25,7 +25,7 @@ const CatalogItem = ({ product }) => {
         <p>Price: ${product.price}</p><p>&nbsp;</p>
         <button 
           onClick={(e) => {
-            e.stopPropagation(); // Prevent navigating when adding to cart
+            e.stopPropagation(); 
             addToCart(product);
           }}
         >

@@ -1,15 +1,18 @@
-import React, { useState, useContext } from "react";
+import React, { useState} from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { login } from "../services/api"; // Login API
+import { login } from "../services/api"; 
 
 const Login = () => {
+  
   const [formData, setFormData] = useState({
     username: "",
     password: "",
   });
   const [error, setError] = useState("");
   const navigate = useNavigate();
-
+  if(localStorage.getItem("customerId")!=null){
+    navigate('/profile')
+  }
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -18,16 +21,17 @@ const Login = () => {
       return;
     }
 
-    setError(""); // Clear previous errors
+    setError(""); 
 
     try {
       const response = await login(formData.username, formData.password);
       console.log("Login successful:", response);
-
-    
-
-      // Navigate to the catalog page after successful login
-      navigate("/");
+  
+      const  customerId  = response.userId;
+      console.log(customerId);
+      localStorage.setItem("customerId", customerId); 
+      
+      navigate("/"); 
     } catch (err) {
       console.error("Login error:", err);
       setError(err.message || "An error occurred while logging in.");

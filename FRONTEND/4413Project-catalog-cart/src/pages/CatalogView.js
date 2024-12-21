@@ -1,24 +1,24 @@
 import React, { useState, useEffect } from "react";
 import CatalogItem from "../components/CatalogItem";
-import { fetchCatalog } from "../services/api"; // Import API service for fetching catalog
+import { fetchCatalog } from "../services/api"; 
 
 const CatalogView = () => {
-  const [products, setProducts] = useState([]); // State for storing product data
+  const [products, setProducts] = useState([]); 
   const [filterType, setFilterType] = useState("All");
   const [filterValue, setFilterValue] = useState("");
-  const [loading, setLoading] = useState(true); // Loading state
+  const [loading, setLoading] = useState(true);
 
-  // Fetch product catalog from the API
+
   useEffect(() => {
     const loadCatalog = async () => {
       try {
         setLoading(true);
         const data = await fetchCatalog();
-        console.log("Loaded products:", data); // Debugging
-        setProducts(Array.isArray(data) ? data : []); // Safe fallback
+        console.log("Loaded products:", data); 
+        setProducts(Array.isArray(data) ? data : []); 
       } catch (error) {
         console.error("Failed to load products:", error);
-        setProducts([]); // Ensure products is always an array
+        setProducts([]); 
       } finally {
         setLoading(false);
       }
@@ -27,11 +27,11 @@ const CatalogView = () => {
     loadCatalog();
   }, []);
 
-  // Extract unique options for brand and category
+
   const uniqueBrands = [...new Set(products.map((product) => product.brand))];
   const uniqueCategories = [...new Set(products.map((product) => product.category))];
 
-  // Filtered products based on filter type and value
+ 
   const filteredProducts = products.filter((product) => {
     if (filterType === "All") return true;
     return product[filterType.toLowerCase()] === filterValue;

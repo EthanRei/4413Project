@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { registerUser } from '../services/api'; // Adjust the import path based on your project structure
+import { CartContext } from "../CartContext";
+import { registerUser, updateCartItems } from '../services/api'; // Adjust the import path based on your project structure
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -13,7 +14,7 @@ const Register = () => {
     address: '',
     email: '',
   });
-
+  const { cart } = useContext(CartContext);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const navigate = useNavigate();
@@ -48,9 +49,17 @@ const Register = () => {
       if (response.error) {
         throw new Error(response.message || 'Registration failed! Please try again.');
       }
+      
+      const requestItems = [];
+      for (const requestItem of cart) {
+        requestItems.push({"itemId": requestItem["itemId"], "qty": requestItem["quantity"]});
+      }
+      const updatedCart = await updateCartItems(response.userId, requestItems);
+      
+      
 
       setSuccess('Registration successful! Redirecting...');
-      setTimeout(() => navigate('/'), 2000); // Redirect after 2 seconds
+      setTimeout(() => navigate('/'), 2000);
     } catch (err) {
       setError(err.message);
     }
