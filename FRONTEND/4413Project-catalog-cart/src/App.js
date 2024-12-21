@@ -9,6 +9,7 @@ import AdminView from './pages/AdminView';
 import CheckoutView from './pages/CheckoutView'
 import Register from './pages/register';
 import ProductDetails from './pages/ItemView'; // Import ProductDetails component 
+import Profile from './pages/Profile';
 import { CartProvider } from './CartContext';
 
 const App = () => {
@@ -19,12 +20,13 @@ const App = () => {
           <Routes>
             <Route path="/" element={<CatalogView />} />
             <Route path="/cart" element={<CartView />} />
+            <Route path="/profile" element={<Profile />} />
             <Route path="/login" element={<Login />} />
             <Route path="/admin" element={<Admin />} />
             <Route path="/adminView" element={<AdminView />} />
             <Route path="/register" element={<Register />} />
             <Route path="/product/:productId" element={<ProductDetails />} />
-            <Route path="/CheckoutView" element={<CheckoutView />} />
+            <Route path="/checkout" element={<CheckoutView />} />
           </Routes>
         </Router>
       </CartProvider>

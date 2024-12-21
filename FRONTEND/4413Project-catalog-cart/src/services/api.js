@@ -1,4 +1,10 @@
-const API_URL = "http://localhost:8080/api";
+let API_URL;
+if (window.location.hostname === "localhost") {
+  API_URL = "http://localhost:8080/api";
+} else {
+  API_URL = "https://" + window.location.hostname + "/api";
+}
+console.log(API_URL);
 
 // ----------------------------AUTHENTICATION----------------------------------------
 // Login 
@@ -15,7 +21,26 @@ export const login = async (username, password) => {
   }
   return response.json();
 };
+// Fetch all users
+export const getAllUsers = async () => {
+  try {
+    const response = await fetch(`${API_URL}/im/users`, {
+      method: "GET",
+      headers: { "Content-Type": "application/json" },
+    });
 
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || "Failed to fetch users");
+    }
+
+    const data = await response.json();
+    return data.users; // Return the users from the response
+  } catch (error) {
+    console.error("Error fetching users:", error);
+    throw error; // Rethrow the error for the calling component to handle
+  }
+};
 // Admin Login
 export const loginAdmin = async (username, password) => {
   const response = await fetch(`${API_URL}/admincheck`, {
@@ -56,10 +81,9 @@ export const fetchProductById = async (itemID) => {
 
 // Update product quantity
 export const updateProductQuantity = async (itemId, newQuantity) => {
-  const response = await fetch(`${API_URL}/catalog/${itemId}/quantity`, {
+  const response = await fetch(`${API_URL}/catalog/${itemId}/quantity?qty=${newQuantity}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ newQuantity }),
   });
   return response.json();
 };
@@ -85,10 +109,11 @@ export const fetchOrdersByCustomer = async (customerId) => {
 };
 
 // Create a new order for a customer
-export const createOrder = async (customerId) => {
+export const createOrder = async (customerId, billData) => {
   const response = await fetch(`${API_URL}/order/${customerId}`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(billData),
   });
 
   if (!response.ok) {

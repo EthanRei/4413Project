@@ -1,174 +1,227 @@
-import React, { useState, useEffect, useCallback } from "react";
-import {
-  fetchOrderHistory,
-  fetchOrderById,
-  fetchCustomerInfo,
-  updateCustomerInfo,
-  fetchCatalog,
-  updateProductQuantity,
-} from "../services/api";
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { fetchOrderHistory, fetchOrderById, fetchProductById, fetchCatalog, updateProductQuantity } from '../services/api';
 
-const AdminPage = () => {
-  const [section, setSection] = useState("sales"); // Manage active tab
-  const [sales, setSales] = useState([]);
-  const [customers, setCustomers] = useState([]);
-  const [inventory, setInventory] = useState([]);
-  const [filters, setFilters] = useState({}); // Filters for sales history
+const SalesHistoryPage = () => {
+  const [orders, setOrders] = useState([]);
+  const [sortedOrders, setSortedOrders] = useState([]);
   const [selectedOrder, setSelectedOrder] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [productDetails, setProductDetails] = useState({});
+  const [sortConfig, setSortConfig] = useState({ key: 'date', direction: 'asc' });
+  const [catalog, setCatalog] = useState([]);
 
-  // Fetch sales history
-  const loadSalesHistory = useCallback(async () => {
-    const data = await fetchOrderHistory(filters);
-    setSales(data);
-  }, [filters]);
+  const navigate = useNavigate();
 
-  // Fetch customers
-  const loadCustomers = async () => {
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const data = await fetchOrderHistory();
+        setOrders(data.orders || []);
+        setSortedOrders(data.orders || []);
+      } catch (err) {
+        setError('Failed to fetch order history.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    const fetchCatalogData = async () => {
+      try {
+        const catalogData = await fetchCatalog();
+        setCatalog(catalogData);
+      } catch (err) {
+        console.error('Failed to fetch catalog data:', err);
+      }
+    };
+
+    fetchData();
+    fetchCatalogData();
+  }, []);
+
+  const fetchProductDetails = async (itemId) => {
+    if (productDetails[itemId]) return productDetails[itemId]; // Avoid refetching
+
     try {
-      const customerIds = [1, 2, 3]; // Example customer IDs
-      const customerData = await Promise.all(
-        customerIds.map((id) => fetchCustomerInfo(id))
-      );
-      setCustomers(customerData);
-    } catch (error) {
-      console.error("Failed to load customers:", error);
+      const data = await fetchProductById(itemId);
+      setProductDetails((prev) => ({ ...prev, [itemId]: data.item }));
+      return data.item;
+    } catch (err) {
+      console.error(`Failed to fetch product details for item ${itemId}`);
+      return null;
     }
   };
 
-  // Fetch inventory
-  const loadInventory = async () => {
-    const data = await fetchCatalog();
-    setInventory(data);
+  const handleOrderClick = async (orderId) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const data = await fetchOrderById(orderId);
+      const enrichedItems = await Promise.all(
+        data.order.items.map(async (item) => {
+          const product = await fetchProductDetails(item.itemId);
+          return {
+            ...item,
+            name: product?.name || 'N/A',
+            price: product?.price || 'N/A',
+          };
+        })
+      );
+      setSelectedOrder({ ...data.order, items: enrichedItems });
+    } catch (err) {
+      setError('Failed to fetch order details.');
+    } finally {
+      setLoading(false);
+    }
   };
 
-  // Load data on component mount
-  useEffect(() => {
-    loadSalesHistory();
-    loadCustomers();
-    loadInventory();
-  }, [loadSalesHistory]);
+  const handleSort = (key) => {
+    const direction = sortConfig.key === key && sortConfig.direction === 'asc' ? 'desc' : 'asc';
+    setSortConfig({ key, direction });
 
-  // Handle customer updates
-  const handleUpdateCustomer = async (id, updatedData) => {
-    await updateCustomerInfo(id, updatedData);
-    loadCustomers();
+    const sorted = [...orders].sort((a, b) => {
+      let valA, valB;
+      if (key === 'customer') {
+        valA = `${a.billInfo?.firstName || ''} ${a.billInfo?.lastName || ''}`.toLowerCase();
+        valB = `${b.billInfo?.firstName || ''} ${b.billInfo?.lastName || ''}`.toLowerCase();
+      } else {
+        valA = key === 'date' ? new Date(a[key]) : a[key];
+        valB = key === 'date' ? new Date(b[key]) : b[key];
+      }
+
+      if (valA < valB) return direction === 'asc' ? -1 : 1;
+      if (valA > valB) return direction === 'asc' ? 1 : -1;
+      return 0;
+    });
+
+    setSortedOrders(sorted);
   };
 
-  // Handle inventory updates
-  const handleUpdateInventory = async (id, newQuantity) => {
-    await updateProductQuantity(id, newQuantity);
-    loadInventory();
+  const handleCustomerClick = (customerId) => {
+    localStorage.setItem('customerId', customerId);
+    console.log(customerId);
+    navigate('/profile');
   };
 
-  // Fetch order details
-  const handleFetchOrderDetails = async (orderId) => {
-    const data = await fetchOrderById(orderId);
-    setSelectedOrder(data);
+   const handleQuantityChange = async (itemId, newQuantity) => {
+    try {
+      await updateProductQuantity(itemId, newQuantity);
+      setCatalog((prevCatalog) =>
+        prevCatalog.map((item) =>
+          item.itemId === itemId ? { ...item, quantity: newQuantity } : item
+        )
+      );
+      console.log(`Updated item ${itemId} to quantity ${newQuantity}`);
+    } catch (err) {
+      console.error(`Failed to update quantity for item ${itemId}:`, err);
+    }
   };
 
   return (
-    <div className="admin-page">
-      <h1>Admin Dashboard</h1>
-      {/* Navigation */}
-      <nav>
-        <button onClick={() => setSection("sales")}>Sales History</button>
-        <button onClick={() => setSection("customers")}>Customer Management</button>
-        <button onClick={() => setSection("inventory")}>Inventory Management</button>
-      </nav>
-
-      {/* Sales History Section */}
-      {section === "sales" && (
-        <div>
-          <h2>Sales History</h2>
-          {/* Filters */}
+    <div style={{ color: 'white' }}>
+      <p> &nbsp;</p>
+      {loading ? (
+        <p>Loading...</p>
+      ) : error ? (
+        <p>{error}</p>
+      ) : (
+        <div style={{ display: 'flex', gap: '2rem' }}>
           <div>
-            <input
-              placeholder="Customer"
-              onChange={(e) => setFilters({ ...filters, customer: e.target.value })}
-            />
-            <input
-              placeholder="Product"
-              onChange={(e) => setFilters({ ...filters, product: e.target.value })}
-            />
-            <input
-              type="date"
-              onChange={(e) => setFilters({ ...filters, date: e.target.value })}
-            />
-            <button onClick={loadSalesHistory}>Apply Filters</button>
+            <h2>Order List</h2><p> &nbsp;</p>
+            <table border="1">
+              <thead>
+                <tr>
+                  <th>Order ID</th>
+                  <th onClick={() => handleSort('customer')}>Customer Name</th>
+                  <th>Total</th>
+                  <th onClick={() => handleSort('date')}>Date</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {sortedOrders.map((order) => (
+                  <tr key={order.orderId}>
+                    <td>{order.orderId}</td>
+                    <td>
+                      <a href="#" onClick={() => handleCustomerClick(order?.customerId)}>
+                        {`${order.billInfo?.firstName || 'N/A'} ${order.billInfo?.lastName || 'N/A'}`}
+                      </a>
+                    </td>
+                    <td>${order.total?.toFixed(2) || '0.00'}</td>
+                    <td>{order.date ? new Date(order.date).toLocaleString() : 'N/A'}</td>
+                    <td>
+                      <button onClick={() => handleOrderClick(order.orderId)}>View Details</button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+                  
+            {selectedOrder && ( 
+              <div><p> &nbsp;</p>
+                <h2>Order Details</h2><p> &nbsp;</p>
+                <p><strong>Order ID:</strong> {selectedOrder.orderId}</p>
+                <p><strong>Customer:</strong> {`${selectedOrder.billInfo.firstName} ${selectedOrder.billInfo.lastName}`}</p>
+                <p><strong>Total:</strong> ${selectedOrder.total.toFixed(2)}</p>
+                <p><strong>Date:</strong> {new Date(selectedOrder.date).toLocaleString()}</p>
+                <h3>Items:  </h3>
+                <table border="1">
+                  <thead>
+                    <tr>
+                      <th>ProductID</th>
+                      <th>Name</th>
+                      <th>Price</th>
+                      <th>Quantity</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {selectedOrder.items.map((item) => (
+                      <tr key={item.itemId}>
+                        <td>{item.itemId}</td>
+                        <td>{item.name}</td>
+                        <td>${item.price}</td>
+                        <td>{item.qty}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+            <p> &nbsp;</p>
+            <h2>Product Catalog</h2>
+            <p> &nbsp;</p>
+            <table border="1">
+              <thead>
+                <tr>
+                  <th>Product ID</th>
+                  <th>Name</th>
+                  <th>Quantity</th>
+                </tr>
+              </thead>
+              <tbody>
+                {catalog.map((product) => (
+                  <tr key={product.itemId}>
+                    <td>{product.itemId}</td>
+                    <td>{product.name}</td>
+                    <td>
+                    <input
+                        type="number"
+                        value={product.quantity}
+                        onChange={(e) => handleQuantityChange(product.itemId, parseInt(e.target.value))}
+                      />
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
-          {/* Sales Table */}
-          <ul>
-            {sales.map((sale) => (
-              <li key={sale.id} onClick={() => handleFetchOrderDetails(sale.id)}>
-                {sale.customer} - {sale.product} - ${sale.price}
-              </li>
-            ))}
-          </ul>
-          {/* Order Details */}
-          {selectedOrder && (
-            <div>
-              <h3>Order Details</h3>
-              <p>User: {selectedOrder.user}</p>
-              <p>Product: {selectedOrder.product}</p>
-              <p>Price: ${selectedOrder.price}</p>
-              <p>Quantity: {selectedOrder.quantity}</p>
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* Customer Management Section */}
-      {section === "customers" && (
-        <div>
-          <h2>Customer Management</h2>
-          <ul>
-            {customers.map((customer) => (
-              <li key={customer.id}>
-                {customer.name} - {customer.email}
-                <button
-                  onClick={() =>
-                    handleUpdateCustomer(customer.id, {
-                      shippingAddress: "Updated Address",
-                    })
-                  }
-                >
-                  Update Address
-                </button>
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
-
-      {/* Inventory Management Section */}
-      {section === "inventory" && (
-        <div>
-          <h2>Inventory Management</h2>
-          <ul>
-            {inventory.map((product) => (
-              <li key={product.id}>
-                {product.name} - {product.quantity} in stock
-                <button
-                  onClick={() =>
-                    handleUpdateInventory(product.id, product.quantity + 1)
-                  }
-                >
-                  Add Inventory
-                </button>
-                <button
-                  onClick={() =>
-                    handleUpdateInventory(product.id, product.quantity - 1)
-                  }
-                >
-                  Reduce Inventory
-                </button>
-              </li>
-            ))}
-          </ul>
         </div>
       )}
     </div>
   );
 };
 
-export default AdminPage;
+export default SalesHistoryPage;

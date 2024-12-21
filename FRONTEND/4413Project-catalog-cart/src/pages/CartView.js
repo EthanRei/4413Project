@@ -17,7 +17,7 @@ const CartView = () => {
 
   return (
     <div className="cart-view">
-      <h2>Your Shopping Cart</h2>
+      <h2>Your Shopping Cart</h2><p>&nbsp;</p>
       {cart.length === 0 ? (
         <p>Your cart is empty. Go back to the catalog to add items.</p>
       ) : (
@@ -28,22 +28,23 @@ const CartView = () => {
                 <img src={item.imageUrl} alt={item.name} />
              </div>
               <div className="cont2">
-                <h3>{item.name}</h3>
-                <p>Price: ${item.price}</p>
+                <p>&nbsp;</p>
+                <h3>{item.name}</h3><p>&nbsp;</p>
+                <p>Price: ${item.price}</p><p>&nbsp;</p>
                 <p>
                   Quantity:{" "}
                   <input
                     type="number"
                     value={item.quantity}
                     min="1"
-                    onChange={(e) => updateQuantity(item.id, e.target.value)}
+                    onChange={(e) => updateQuantity(item.itemId, e.target.value)}
                   />
-                </p>
-                <button onClick={() => removeFromCart(item.id)}>Remove</button>
+                </p><p>&nbsp;</p>
+                <button onClick={() => removeFromCart(item.itemId)}>Remove</button>
               </div>
             </div>
           ))}
-          <h3>Total: ${calculateTotal().toFixed(2)}</h3>
+          <h3>Total: ${(calculateTotal()*1.13).toFixed(2)}</h3>
           <button onClick={handleCheckout}>Proceed to Checkout</button>
         </div>
       )}
