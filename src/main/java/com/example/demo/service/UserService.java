@@ -29,7 +29,6 @@ public class UserService {
 
     public User registerNewUser(User user) {
         User savedUser = userRepository.save(user);
-        savedUser.getUserId();
         cartService.createCartForCustomer(savedUser.getUserId());
         return savedUser;
     }
